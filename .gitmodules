@@ -1,0 +1,3 @@
+[submodule "baseline"]
+	path = baseline
+	url = git@github.com:artazar/kubernetes-cluster-sample.git

@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: default-cluster-values
+  namespace: flux
+data:
+  values.yaml: |
+    k8s_cluster_type: "gke"   # Supported values for cluster type: "gke" or "self-hosted"
+    environment_name: "test"
+    region: "euwe1"
+    prometheus:
+      enabled: true   # For some test clusters we may skip setting up monitoring
+      tainted_node_pool: true   # Set to 'false' if there is no separate node pool dedicated to monitoring
+      replicas: 1   # Change to 2 for Production environments
+      retention: "30d"
+      storage_class: "standard"   #  "standard" / "ssd"
+      storage_size: "50G"   # Approximate rough calculation: 100 pods / 10 days = 5 GB
+      load_balancer_ip: "10.10.10.40"   # use .40 of nodes IP range for GKE and .112 of MetalLB range for self-hosted
+    fluent_bit:
+      enabled: true   # Optionally, GKE-only environments may have it set to 'false' and use Stackdriver only
+      graylog_ip: "10.10.10.205" 
+      graylog_port: "12201"   # 12201 for Dev and Staging, 12202 for Production
+      gelf_mode: "tcp"   # We use "tcp" everywhere, but this could also be "udp" occasionally
+    metallb:
+      enabled: true   # Only used with self-hosted clusters
+      addresses: "10.10.133.100-10.10.133.199"   # The range of addresses dedicated to MetalLB for Kubernetes LoadBalancer service type allocations
+    nginx_ingress:
+      kind: "daemonset"   # Defines how to deploy nginx ingress controller: deployment (basic) or daemonset (HA)
+      traffic_policy: "Local"   # Defines externalTrafficPolicy value for nginx ingress controller service resources within the cluster
+      public:
+        enabled: true   # To enable public facing ingresses
+        port: 31882   # We tend to use standard nodePorts, but leave it possible to modify it
+      whitelisted:
+        enabled: false  # To enable whitelisted ingresses
+        port: 31883   # We tend to use standard nodePorts, but leave it possible to modify it

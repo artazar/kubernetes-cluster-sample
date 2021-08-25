@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    fluxcd.io/ignore: sync_only   # We never want to delete this namespace
+  labels:
+    k8s-namespace: sample-namespace
+  name: sample-namespace

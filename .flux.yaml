@@ -1,0 +1,11 @@
+## A w/a that allows git submodules to work
+## https://github.com/fluxcd/flux/issues/2979#issuecomment-680321988
+version: 1
+commandUpdated:
+  generators:
+    # The line below is required for proper authentication against submodule repositories. Each added submodule needs a separate line like this.
+    - command: git config submodule.baseline.url https://${GIT_AUTHUSER}:${GIT_AUTHKEY}@github.com/artazar/kubernetes-resources-common-baseline.git
+    - command: git submodule init >> /dev/null
+    - command: git submodule update --remote >> /dev/null
+    - command: kustomize edit add resource $(find -type f \( -name "*.yaml" -o -name "*.yml" \) ! -name ".*" ! -name "kustomization.yaml")
+    - command: kustomize build .

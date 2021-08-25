@@ -1,0 +1,28 @@
+apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
+metadata:
+  name: default-namespace-network-policies-sample-namespace
+  namespace: flux   # we put HelmRelease resources into flux namespace to make use of secretRef with Git credentials
+spec:
+  releaseName: default-namespace-network-policies
+  targetNamespace: sample-namespace   # the namespace where Helm chart gets deployed
+  chart:
+    git: "https://github.com/artazar/helm"
+    path: "security/default-namespace-network-policies"
+    version: "0.1.0"
+    secretRef:
+      name: flux-git-auth
+  valuesFrom:
+  - configMapKeyRef:
+      name: default-cluster-values
+  values:
+    allow_namespace_traffic: false
+    allow_ingress_cluster_traffic: false
+    allow_egress_cluster_traffic: false
+    allow_ingress_private_traffic: false
+    allow_egress_private_traffic: false
+    allow_monitoring: false
+    allow_apiserver: false
+    allow_internet: false
+    allow_ingress_traffic: false
+    allow_egress_traffic: false
